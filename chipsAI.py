@@ -1,10 +1,5 @@
 #Import modules
-
-from colorfight import Colorfight
-import time
-import random
-import AI_methods
-from colorfight.constants import BLD_GOLD_MINE, BLD_ENERGY_WELL, BLD_FORTRESS
+from AI_methods import *
 
 #Setup
 game = Colorfight()
@@ -29,7 +24,7 @@ if game.register(username = userAI, password = passAI, join_key="chips"):
         me = game.me
 
         total_energy = me.energy;
-        estimated_attacks = total_energy/200;
+        estimated_attacks = int(total_energy/200 + 0.5);
 
         attack_canidates = [];
 
@@ -40,4 +35,12 @@ if game.register(username = userAI, password = passAI, join_key="chips"):
 
                 if c.attack_cost < me.energy and c.owner != game.uid and c.position not in my_attack_list and len(me.cells) < 95:
                     if c.natural_energy > 5 or c.natural_gold > 5:
-                        addToCanidates(attack_canidates, pos, c)
+                        addToCanidates(attack_canidates, c, game)
+
+        for cell in attack_canidates:
+            if cell.attack_cost < me.energy:
+                cmd_list.append(game.attack(cell.position, cell.attack_cost))
+                print("Attack")
+            game.me.energy -= cell.attack_cost
+        result = game.send_cmd(cmd_list)
+        print(result)
