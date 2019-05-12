@@ -33,14 +33,11 @@ if game.register(username = userAI, password = passAI, join_key="chips"):
             for pos in cell.position.get_surrounding_cardinals():
                 c = game.game_map[pos]
 
-                if c.attack_cost < me.energy and c.owner != game.uid and c.position not in my_attack_list and len(me.cells) < 95:
-                    if c.natural_energy > 5 or c.natural_gold > 5:
-                        addToCanidates(attack_canidates, c, game)
+                if c.attack_cost < me.energy and c.owner != game.uid and c.position not in my_attack_list:# and len(me.cells) < 95:
+                    cmd_list.append(game.attack(pos, c.attack_cost))
+                    print("We are attacking ({}, {}) with {} energy".format(pos.x, pos.y, c.attack_cost))
+                    game.me.energy -= c.attack_cost
+                    my_attack_list.append(c.position)
 
-        for cell in attack_canidates:
-            if cell.attack_cost < me.energy:
-                cmd_list.append(game.attack(cell.position, cell.attack_cost))
-                print("Attack")
-            game.me.energy -= cell.attack_cost
         result = game.send_cmd(cmd_list)
         print(result)
